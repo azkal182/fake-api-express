@@ -22,17 +22,30 @@ app.get('/', (req,res)=>{
 })
 app.post('/register', async (req, res) => {
 	try {
-		const { username, password } = req.body;
+		const { username, password, name } = req.body;
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		await client.connect();
 		const db = client.db(dbName);
 		const usersCollection = db.collection('users');
 		const newUser = {
+			name,
 			username,
 			password: hashedPassword,
 		};
+		const userExist = await usersCollection.findOne({username});
+		if (userExist) {
+			res.status(409).json({message:'username tidak tersedia'})
+			return 
+		}
 		const result = await usersCollection.insertOne(newUser);
+		
+		const token = jwt.sign({ userId: result.insertedId }, secretKey, { algorithm: 'HS256', expiresIn: '1d' });
+		res.cookie('token', token, {
+			httpOnly: true,
+			maxAge: 24 * 30 * 60 * 60 * 1000
+		})
+		
 
 		res.status(201).json({ message: 'Registrasi berhasil', userId: result.insertedId });
 	} catch (error) {
