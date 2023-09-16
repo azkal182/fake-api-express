@@ -17,6 +17,9 @@ const secretKey = 'bxkgdkgdgkdkgjg8y86868tptuurlu'; // Gantilah dengan kunci rah
 app.use(express.json());
 
 // Endpoint untuk registrasi pengguna baru
+app.get('/', (req,res)=>{
+	res.json({status:'ok'})
+})
 app.post('/register', async (req, res) => {
 	try {
 		const { username, password } = req.body;
@@ -504,7 +507,7 @@ app.get('/verify', (req, res) => {
 });
 
 // Mulai server
-const port = 2000; // Port yang Anda inginkan
+const port = 3000; // Port yang Anda inginkan
 app.listen(port, () => {
 	console.log(`Server berjalan di http://localhost:${port}`);
 });
