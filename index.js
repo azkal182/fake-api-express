@@ -47,7 +47,7 @@ app.post('/register', async (req, res) => {
 		})
 		
 
-		res.status(201).json({ message: 'Registrasi berhasil', userId: result.insertedId , token});
+		res.status(201).json({ message: 'Registrasi berhasil', userId: result.insertedId , accessToken:token});
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Terjadi kesalahan saat registrasi' });
@@ -79,7 +79,7 @@ app.post('/login', async (req, res) => {
 			httpOnly: true,
 			maxAge: 24 * 30 * 60 * 60 * 1000
 		})
-		res.status(200).json({ token });
+		res.status(200).json({ ...user, accessToken:token });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Terjadi kesalahan saat login' });
