@@ -77,7 +77,7 @@ app.post('/login', async (req, res) => {
 
 		const token = jwt.sign({ userId: user._id, name:user.name, username:user.username }, secretKey, { algorithm: 'HS256', expiresIn: '1d' });
 		const refreshToken = jwt.sign({ userId: user._id,name:user.name, username:user.username }, secretKey, { algorithm: 'HS256', expiresIn: '30d' });
-		
+		delete user.password
 		res.cookie('token', token, {
 			httpOnly: true,
 			maxAge: 24 * 30 * 60 * 60 * 1000
