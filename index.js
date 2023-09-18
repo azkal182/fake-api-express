@@ -41,6 +41,7 @@ app.post('/register', async (req, res) => {
 		const result = await usersCollection.insertOne(newUser);
 		
 		const token = jwt.sign({ userId: result.insertedId }, secretKey, { algorithm: 'HS256', expiresIn: '1d' });
+		
 		res.cookie('token', token, {
 			httpOnly: true,
 			maxAge: 24 * 30 * 60 * 60 * 1000
@@ -74,12 +75,14 @@ app.post('/login', async (req, res) => {
 			return res.status(401).json({ errors: { message: 'Username atau password salah' } });
 		}
 
-		const token = jwt.sign({ userId: user._id }, secretKey, { algorithm: 'HS256', expiresIn: '1d' });
+		const token = jwt.sign({ userId: user._id, name:user.name, username:user.username }, secretKey, { algorithm: 'HS256', expiresIn: '1d' });
+		const refreshToken = jwt.sign({ userId: user._id,name:user.name, username:user.username }, secretKey, { algorithm: 'HS256', expiresIn: '30d' });
+		
 		res.cookie('token', token, {
 			httpOnly: true,
 			maxAge: 24 * 30 * 60 * 60 * 1000
 		})
-		res.status(200).json({ ...user, accessToken:token });
+		res.status(200).json({ ...user, accessToken:token, refreshToken });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Terjadi kesalahan saat login' });
